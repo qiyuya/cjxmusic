@@ -1,66 +1,38 @@
 // pages/home-music/index.js
+import { getBanners } from "../../service/api_music";
+import queryRect from "../../utils/query-rect";
+import throttle from "../../utils/throttle";
+
+const throttleQueryRect = throttle(queryRect);
+
 Page({
+  data: {
+    banners: [],
+    swiperHeight: 0,
+  },
 
-    /**
-     * 页面的初始数据
-     */
-    data: {
+  onLoad(options) {
+    this.getPageData();
+  },
 
-    },
-
-    /**
-     * 生命周期函数--监听页面加载
-     */
-    onLoad: function (options) {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面初次渲染完成
-     */
-    onReady: function () {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面显示
-     */
-    onShow: function () {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面隐藏
-     */
-    onHide: function () {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面卸载
-     */
-    onUnload: function () {
-
-    },
-
-    /**
-     * 页面相关事件处理函数--监听用户下拉动作
-     */
-    onPullDownRefresh: function () {
-
-    },
-
-    /**
-     * 页面上拉触底事件的处理函数
-     */
-    onReachBottom: function () {
-
-    },
-
-    /**
-     * 用户点击右上角分享
-     */
-    onShareAppMessage: function () {
-
-    }
-})
+  // 网络请求
+  getPageData() {
+    getBanners().then((res) => {
+      this.setData({ banners: res.banners });
+    });
+  },
+  // 事件处理
+  handleSearchClick() {
+    wx.navigateTo({
+      url: "/pages/detail-search/index",
+    });
+  },
+  handleSwiperImageLoaded() {
+    // 获取图片的高度(如果去获取某一个组件的高度)
+    throttleQueryRect(".swiper-image").then((res) => {
+      const rect = res[0];
+      this.setData({ swiperHeight: rect.height });
+    });
+  },
+  onUnload() {},
+});

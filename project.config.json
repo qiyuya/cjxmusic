@@ -47,7 +47,7 @@
         "ignoreUploadUnusedFiles": true
     },
     "compileType": "miniprogram",
-    "libVersion": "2.19.4",
+    "libVersion": "2.17.0",
     "appid": "wx938501d38fe9e745",
     "projectname": "CJXMusic",
     "debugOptions": {
