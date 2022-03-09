@@ -5,3 +5,8 @@ export function getBanners() {
     type: 2,
   });
 }
+export function getRankings(idx) {
+  return cjxRequest.get("/top/list", {
+    idx,
+  });
+}

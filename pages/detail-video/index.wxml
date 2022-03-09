@@ -1,5 +1,5 @@
 <!--pages/detail-video/index.wxml-->
-<video class="video" src="{{mvURLinfo.url}}" autoplay loop></video>
+<video class="video" src="{{mvURLinfo.url}}" referrer-police="origin" autoplay loop></video>
 
 <wxs src="../../utils/format.wxs" module="format"></wxs>
 <view class="info">
