@@ -17,3 +17,12 @@ export function getSongMenu(cat = "全部", limit = 6, offset = 0) {
     offset,
   });
 }
+
+export function getSongMenuDetail(id) {
+  return cjxRequest.get("/playlist/detail/dynamic", {
+    id,
+  });
+}
+export function getSongMenuTags() {
+  return cjxRequest.get("/playlist/hot");
+}
