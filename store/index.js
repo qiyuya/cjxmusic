@@ -1,3 +1,5 @@
 import { rankingStore, rankingMap } from "./ranking-store";
 
-export { rankingStore, rankingMap };
+import { audioContext } from "./player-store";
+
+export { rankingStore, rankingMap, audioContext };
