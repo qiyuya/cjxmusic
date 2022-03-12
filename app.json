@@ -5,8 +5,17 @@
         "pages/detail-video/index",
         "pages/detail-search/index",
         "pages/detail-songs/index",
-        "pages/detail-menu/index",
-        "pages/music-player/index"
+        "pages/music-player/index",
+        "pages/detail-menu/index"
+    ],
+    "window": {
+        "backgroundTextStyle": "light",
+        "navigationBarBackgroundColor": "#fafafa",
+        "navigationBarTitleText": "Weixin",
+        "navigationBarTextStyle": "black"
+    },
+    "requiredBackgroundModes": [
+        "audio"
     ],
     "tabBar": {
         "list": [
@@ -24,12 +33,7 @@
             }
         ]
     },
-    "window": {
-        "backgroundTextStyle": "light",
-        "navigationBarBackgroundColor": "#fafafa",
-        "navigationBarTitleText": "Weixin",
-        "navigationBarTextStyle": "black"
-    },
     "style": "v2",
-    "sitemapLocation": "sitemap.json"
+    "sitemapLocation": "sitemap.json",
+    "lazyCodeLoading": "requiredComponents"
 }

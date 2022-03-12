@@ -8,7 +8,12 @@ Page({
   data: {
     songMenuList: [],
   },
-
+  handleMenuItemClick(event) {
+    const item = event.currentTarget.dataset.item;
+    wx.navigateTo({
+      url: `/pages/detail-songs/index?id=${item.id}&type=menu`,
+    });
+  },
   /**
    * 生命周期函数--监听页面加载
    */

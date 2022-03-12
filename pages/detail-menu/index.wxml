@@ -5,7 +5,7 @@
     <view class="menu-list">
       <block wx:for="{{item.list}}" wx:for-item="menuItem" wx:key="id">
         <view class="menu-list-item">
-          <song-list-item itemInfo="{{menuItem}}"></song-list-item>
+          <song-menu-item item="{{menuItem}}" bindtap="handleMenuItemClick" data-item="{{menuItem}}"></song-menu-item>
         </view>
       </block>
     </view>

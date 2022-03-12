@@ -16,5 +16,9 @@ Component({
     statusBarHeight: globalData.statusBarHeight,
     navBarHeight: globalData.navBarHeight,
   },
-  methods: {},
+  methods: {
+    handleLeftClick: function () {
+      this.triggerEvent("click");
+    },
+  },
 });
