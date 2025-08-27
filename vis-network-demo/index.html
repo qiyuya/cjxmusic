@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>vis-network 关系图 Demo</title>
+	<link rel="stylesheet" href="./vendor/vis-network.min.css" />
+	<style>
+		:root {
+			--bg: #0f1115;
+			--panel: #151924;
+			--text: #e6eaf2;
+			--muted: #8b93a7;
+			--accent: #5b9cff;
+		}
+
+		* { box-sizing: border-box; }
+		body {
+			margin: 0;
+			font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji;
+			background: var(--bg);
+			color: var(--text);
+		}
+		.wrapper {
+			max-width: 1040px;
+			margin: 24px auto;
+			padding: 0 16px;
+		}
+		h1 {
+			font-size: 20px;
+			font-weight: 600;
+			margin: 0 0 12px;
+		}
+		.panel {
+			background: var(--panel);
+			border: 1px solid #202635;
+			border-radius: 12px;
+			padding: 12px;
+		}
+		.controls {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px 14px;
+			align-items: center;
+			margin-bottom: 12px;
+		}
+		.controls label {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			color: var(--muted);
+			user-select: none;
+		}
+		button {
+			appearance: none;
+			border: 1px solid #2a3347;
+			background: #1a2130;
+			color: var(--text);
+			padding: 6px 12px;
+			border-radius: 8px;
+			cursor: pointer;
+			transition: background .15s ease, border-color .15s ease;
+		}
+		button:hover { background: #222a3b; border-color: #394562; }
+		button.primary { border-color: #3463ff; background: #2441b7; }
+		button.primary:hover { background: #2a4bcd; }
+
+		.grid {
+			display: grid;
+			grid-template-columns: 1fr 320px;
+			gap: 12px;
+		}
+		@media (max-width: 920px) { .grid { grid-template-columns: 1fr; } }
+
+		#network {
+			height: 600px;
+			background: #0c0f15;
+			border: 1px solid #1f2636;
+			border-radius: 10px;
+		}
+		.sidebar {
+			background: #111622;
+			border: 1px solid #1f2636;
+			border-radius: 10px;
+			padding: 10px;
+		}
+		.sidebar h3 {
+			margin: 0 0 8px;
+			font-size: 14px;
+			color: var(--muted);
+			font-weight: 500;
+		}
+		#log {
+			font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+			font-size: 12px;
+			white-space: pre-wrap;
+			word-break: break-word;
+			margin: 0;
+			max-height: 560px;
+			overflow: auto;
+		}
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<h1>vis-network 关系图 Demo</h1>
+		<div class="panel">
+			<div class="controls">
+				<label>
+					<input id="physicsToggle" type="checkbox" checked /> 启用物理引擎
+				</label>
+				<button id="btnFit" class="primary">居中并缩放</button>
+				<button id="btnStabilize">重布局 / 稳定</button>
+			</div>
+			<div class="grid">
+				<div id="network"></div>
+				<aside class="sidebar">
+					<h3>交互事件</h3>
+					<pre id="log">暂无</pre>
+				</aside>
+			</div>
+		</div>
+	</div>
+
+	<script src="./vendor/vis-network.min.js"></script>
+	<script>
+		if (typeof window.vis === 'undefined' || !window.vis.Network) {
+			const container = document.getElementById('network');
+			if (container) {
+				container.style.display = 'grid';
+				container.style.placeItems = 'center';
+				container.style.color = '#e6eaf2';
+				container.textContent = 'vis-network 库未能加载，请检查本地文件或网络环境。';
+			}
+			throw new Error('vis-network 未加载');
+		}
+	</script>
+	<script>
+		// 数据集：节点与边
+		const nodes = new vis.DataSet([
+			{ id: 1, label: '用户', group: 'people' },
+			{ id: 2, label: '订单', group: 'object' },
+			{ id: 3, label: '商品', group: 'object' },
+			{ id: 4, label: '支付', group: 'service' },
+			{ id: 5, label: '仓库', group: 'service' },
+			{ id: 6, label: '物流', group: 'service' },
+			{ id: 7, label: '客服', group: 'people' },
+		]);
+
+		const edges = new vis.DataSet([
+			{ from: 1, to: 2, label: '下单' },
+			{ from: 2, to: 3, label: '包含' },
+			{ from: 2, to: 4, label: '支付' },
+			{ from: 3, to: 5, label: '出库' },
+			{ from: 5, to: 6, label: '发货' },
+			{ from: 6, to: 1, label: '签收' },
+			{ from: 1, to: 7, label: '咨询' },
+			{ from: 7, to: 2, label: '处理' },
+		]);
+
+		// 配置项
+		const options = {
+			interaction: {
+				hover: true,
+				navigationButtons: true,
+				keyboard: { enabled: true }
+			},
+			physics: {
+				enabled: true,
+				stabilization: { iterations: 200 },
+				barnesHut: { gravitationalConstant: -3200, springLength: 120, springConstant: 0.03 }
+			},
+			layout: {
+				randomSeed: 2
+			},
+			nodes: {
+				shape: 'dot',
+				size: 18,
+				font: { color: '#e6eaf2', size: 14 },
+				borderWidth: 1,
+				shadow: { enabled: true, size: 4, x: 0, y: 0 }
+			},
+			edges: {
+				arrows: { to: { enabled: true, scaleFactor: 0.7 } },
+				smooth: { enabled: true, type: 'dynamic' },
+				color: { color: '#7aa2f7', highlight: '#a5bdfc', hover: '#a5bdfc' },
+				font: { align: 'middle', color: '#9aa3b2' }
+			},
+			groups: {
+				people: { color: { background: '#2b3246', border: '#5973ff' } },
+				object: { color: { background: '#263b36', border: '#4cc38a' } },
+				service: { color: { background: '#3a2d3e', border: '#d76eff' } }
+			}
+		};
+
+		// 初始化网络
+		const container = document.getElementById('network');
+		const data = { nodes, edges };
+		const network = new vis.Network(container, data, options);
+
+		// 控制与事件
+		const physicsToggle = document.getElementById('physicsToggle');
+		const btnFit = document.getElementById('btnFit');
+		const btnStabilize = document.getElementById('btnStabilize');
+		const logEl = document.getElementById('log');
+
+		function log(message, payload) {
+			const time = new Date().toLocaleTimeString();
+			const text = `[${time}] ${message}` + (payload ? `\n${JSON.stringify(payload, null, 2)}` : '');
+			logEl.textContent = text + '\n\n' + logEl.textContent;
+		}
+
+		physicsToggle.addEventListener('change', () => {
+			network.setOptions({ physics: { enabled: physicsToggle.checked } });
+			log('切换物理引擎', { enabled: physicsToggle.checked });
+		});
+
+		btnFit.addEventListener('click', () => {
+			network.fit({ animation: { duration: 600, easing: 'easeInOutQuad' } });
+			log('执行居中缩放');
+		});
+
+		btnStabilize.addEventListener('click', () => {
+			network.stabilize();
+			log('触发稳定（重布局）');
+		});
+
+		network.on('click', (params) => {
+			log('单击', params);
+		});
+		network.on('doubleClick', (params) => {
+			log('双击', params);
+		});
+		network.on('selectNode', (params) => {
+			log('选择节点', params);
+		});
+		network.on('dragEnd', (params) => {
+			log('拖拽结束', params);
+		});
+
+		// 自适应容器大小变化
+		let resizeTimer = null;
+		window.addEventListener('resize', () => {
+			clearTimeout(resizeTimer);
+			resizeTimer = setTimeout(() => network.fit({ animation: false }), 150);
+		});
+	</script>
+</body>
+</html>
+
