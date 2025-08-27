@@ -4,7 +4,7 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>vis-network 关系图 Demo</title>
-	<link rel="stylesheet" href="https://unpkg.com/vis-network/styles/vis-network.min.css" />
+	<link rel="stylesheet" href="./vendor/vis-network.min.css" />
 	<style>
 		:root {
 			--bg: #0f1115;
@@ -122,7 +122,19 @@
 		</div>
 	</div>
 
-	<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+	<script src="./vendor/vis-network.min.js"></script>
+	<script>
+		if (typeof window.vis === 'undefined' || !window.vis.Network) {
+			const container = document.getElementById('network');
+			if (container) {
+				container.style.display = 'grid';
+				container.style.placeItems = 'center';
+				container.style.color = '#e6eaf2';
+				container.textContent = 'vis-network 库未能加载，请检查本地文件或网络环境。';
+			}
+			throw new Error('vis-network 未加载');
+		}
+	</script>
 	<script>
 		// 数据集：节点与边
 		const nodes = new vis.DataSet([
